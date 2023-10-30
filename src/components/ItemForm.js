@@ -1,11 +1,34 @@
 import React, { useState } from "react";
 
-function ItemForm() {
+function ItemForm({ onAddItem }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Produce");
 
+  // Add function to handle submissions
+  function handleSubmit(e) {
+    e.preventDefault(); // Fixed the typo here (should be preventDefault, not preventdefault)
+
+    const itemData = {
+      name: name,
+      category: category,
+      isInCart: false,
+    };
+
+    // Move the fetch and the onAddItem inside the handleSubmit function
+    fetch("http://localhost:4000/items", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(itemData),
+    })
+      .then((r) => r.json())
+      // Call the onAddItem prop with the newItem
+      .then((newItem) => onAddItem(newItem));
+  }
+
   return (
-    <form className="NewItem">
+    <form className="NewItem" onSubmit={handleSubmit}>
       <label>
         Name:
         <input
